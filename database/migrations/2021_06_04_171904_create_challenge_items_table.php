@@ -15,11 +15,12 @@ class CreateChallengeItemsTable extends Migration
     {
         Schema::create('challenge_items', function (Blueprint $table) {
             $table->id();
+            $table->string('session_id');
             $table->string('name');
             $table->string('address');
             $table->boolean('checked');
             $table->text('description');
-            $table->dateTime('date_of_birth');
+            $table->dateTime('date_of_birth')->nullable();
             $table->string('interest');
             $table->string('email');
             $table->string('account');
