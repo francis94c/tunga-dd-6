@@ -2,16 +2,15 @@
 
 namespace App\Jobs;
 
+use App\Adapters\JsonAdapter;
 use App\Models\ChallengeItem;
 use Carbon\Carbon;
 use Illuminate\Bus\Queueable;
-use Illuminate\Contracts\Queue\ShouldBeUnique;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Support\Facades\Cache;
-use JsonMachine\JsonMachine;
 
 class SaveDataJob implements ShouldQueue
 {
@@ -25,7 +24,9 @@ class SaveDataJob implements ShouldQueue
     public function __construct($fileLocation)
     {
         // File location could be appended with date and time for more uniqueness.
-        $jsonArray = JsonMachine::fromFile($fileLocation);
+        // We use our custom data adapter for JSON data.
+        $dataSource = new JsonAdapter($fileLocation);
+        // We could create different adapters for different data formats.
 
         $cacheKey = str_replace("..", "", str_replace("/", "-", $fileLocation));
 
@@ -41,7 +42,8 @@ class SaveDataJob implements ShouldQueue
             $sessionId = $lastSaved['session_id'];
         }
 
-        foreach ($jsonArray as $index => $data) {
+        // Let's iterate through our data source.
+        $dataSource->iterate(function ($index, $data) use ($sessionId, &$lastSaved, $cacheKey) {
             if ($lastSaved !== null) {
                 if ($lastSaved['index'] == $index) {
                     info("Resuming safely...");
@@ -55,11 +57,11 @@ class SaveDataJob implements ShouldQueue
                         $challengeItem->checked == $data['checked'] &&
                         $challengeItem->description == $data['description']
                     ) {
-                        continue;
+                        return;
                     }
                     // Go ahead and process this data from the 'Filter Logic' section.
                 } else {
-                    continue;
+                    return;
                 }
             }
 
@@ -93,9 +95,9 @@ class SaveDataJob implements ShouldQueue
             ]);
 
             info("Processed Data: $index");
-        }
+        });
 
-        info ("Done");
+        info("Done");
 
         // We re done here. Remove error recovery data.
         Cache::forget($cacheKey);
