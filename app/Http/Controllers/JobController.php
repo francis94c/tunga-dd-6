@@ -14,7 +14,7 @@ class JobController extends Controller
      */
     public function runJob()
     {
-        dispatch(new SaveDataJob('challenge.json'));
+        dispatch(new SaveDataJob('../challenge.json'));
 
         return response()->json([
             'message' => 'Data saved from JSON file.'

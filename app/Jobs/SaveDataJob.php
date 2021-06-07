@@ -24,9 +24,10 @@ class SaveDataJob implements ShouldQueue
      */
     public function __construct($fileLocation)
     {
+        // File location could be appended with date and time for more uniqueness.
         $jsonArray = JsonMachine::fromFile($fileLocation);
 
-        $cacheKey = str_replace("/", "-", $fileLocation);
+        $cacheKey = str_replace("..", "", str_replace("/", "-", $fileLocation));
 
         $lastSaved = Cache::get($cacheKey);
 
@@ -58,8 +59,9 @@ class SaveDataJob implements ShouldQueue
             }
 
             // Filter Logic
-            $dob = $data['date_of_birth'] ? Carbon::parse($data['date_of_birth']) : null;
+            $dob = $data['date_of_birth'] ? Carbon::parse(str_replace("/", "-", $data['date_of_birth'])) : null;
 
+            // We can switch filter conditions here
             if ($dob && $dob->age >= 18 && $dob->age <= 65) {
                 ChallengeItem::create([
                     'session_id'                  => $sessionId,
@@ -87,6 +89,9 @@ class SaveDataJob implements ShouldQueue
         }
 
         info ("Done");
+
+        // We re done here.
+        Cache::forget($cacheKey);
     }
 
     /**

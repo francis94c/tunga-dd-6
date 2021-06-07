@@ -21,7 +21,7 @@ class CreateChallengeItemsTable extends Migration
             $table->boolean('checked');
             $table->text('description');
             $table->dateTime('date_of_birth')->nullable();
-            $table->string('interest');
+            $table->string('interest')->nullable();
             $table->string('email');
             $table->string('account');
             $table->string('credit_card_type');
