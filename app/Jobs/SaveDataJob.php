@@ -29,11 +29,15 @@ class SaveDataJob implements ShouldQueue
 
         $cacheKey = str_replace("..", "", str_replace("/", "-", $fileLocation));
 
+        // Our Error Recovery Information Pointer
+        // Cache driver is REDIS (predis/predis)
         $lastSaved = Cache::get($cacheKey);
 
         if ($lastSaved === null) {
+            // First time, create a session id;
             $sessionId = date('YmdHis');
         } else {
+            // Retrieve a session id.
             $sessionId = $lastSaved['session_id'];
         }
 
@@ -53,6 +57,7 @@ class SaveDataJob implements ShouldQueue
                     ) {
                         continue;
                     }
+                    // Go ahead and process this data from the 'Filter Logic' section.
                 } else {
                     continue;
                 }
@@ -63,6 +68,7 @@ class SaveDataJob implements ShouldQueue
 
             // We can switch filter conditions here
             if ($dob && $dob->age >= 18 && $dob->age <= 65) {
+                // Save Item.
                 ChallengeItem::create([
                     'session_id'                  => $sessionId,
                     'name'                        => $data['name'],
@@ -80,6 +86,7 @@ class SaveDataJob implements ShouldQueue
                 ]);
             }
 
+            // Record that we've save the item by recording it's index.
             Cache::put($cacheKey, [
                 'index'      => $index,
                 'session_id' => $sessionId
@@ -90,7 +97,7 @@ class SaveDataJob implements ShouldQueue
 
         info ("Done");
 
-        // We re done here.
+        // We re done here. Remove error recovery data.
         Cache::forget($cacheKey);
     }
 
