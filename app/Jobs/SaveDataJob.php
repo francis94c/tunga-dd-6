@@ -62,6 +62,7 @@ class SaveDataJob implements ShouldQueue
 
             if ($dob && $dob->age >= 18 && $dob->age <= 65) {
                 ChallengeItem::create([
+                    'session_id'                  => $sessionId,
                     'name'                        => $data['name'],
                     'address'                     => $data['address'],
                     'checked'                     => $data['checked'],

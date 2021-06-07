@@ -1,8 +1,8 @@
 FROM php:7.4-fpm-alpine
 
-RUN docker-php-ext-install pdo pdo_mysql
+RUN docker-php-ext-install pdo pdo_mysql mysqli
 
-RUN apk update && apk add --no-cache supervisor
+# RUN apk update && apk add --no-cache supervisor
 
 RUN mkdir /var/www/bootstrap && mkdir /var/www/bootstrap/cache
 
@@ -29,10 +29,11 @@ RUN chown -R www-data:www-data \
 RUN php composer.phar install
 
 COPY .env .env
-COPY wait-for-it.sh wait-for-it.sh
+COPY db-test.php db-test.php
+COPY start.sh start.sh
 
 # RUN php artisan config:clear && php artisan migrate
 
 EXPOSE 9000
 
-CMD ["sh start.sh"]
+CMD ["sh", "start.sh"]

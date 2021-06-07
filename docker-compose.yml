@@ -18,6 +18,9 @@ services:
     depends_on:
       - mysql
       - redis
+    volumes:
+      - ./public:/var/www/html
+      - ./app:/var/www/app
     environment:
       MYSQL_ROOT_PASSWORD: password
       MYSQL_DATABASE: laravel
@@ -36,6 +39,7 @@ services:
       - 3001:80
     volumes:
       - ./nginx/conf.d/:/etc/nginx/conf.d/
+      - ./public:/var/www/html
 
   #   adminer:
   #     image: adminer

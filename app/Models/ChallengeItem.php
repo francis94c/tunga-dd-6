@@ -10,6 +10,7 @@ class ChallengeItem extends Model
     use HasFactory;
 
     protected $fillable = [
+        'session_id',
         'name',
         'address',
         'checked',
