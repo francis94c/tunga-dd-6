@@ -12,6 +12,7 @@ services:
       MYSQL_DATABASE: laravel
       SERVICE_NAME: mysql
   app:
+    image: tunga-dd-6
     build:
       context: .
       dockerfile: Dockerfile
@@ -31,7 +32,7 @@ services:
       CONTAINER_ROLE: app
   
   queue:
-    image: tunga-dd-6_app:latest
+    image: tunga-dd-6:latest
     environment: 
       CONTAINER_ROLE: queue
     depends_on:
