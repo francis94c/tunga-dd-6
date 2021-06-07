@@ -20,6 +20,7 @@ services:
       - redis
     volumes:
       - ./public:/var/www/html
+      - .:/var/www
       - ./app:/var/www/app
     environment:
       MYSQL_ROOT_PASSWORD: password
@@ -27,6 +28,16 @@ services:
       MYSQL_HOST: mysql
       MYSQL_PORT: 3306
       SERVICE_NAME: mysql
+      CONTAINER_ROLE: app
+  
+  queue:
+    image: tunga-dd-6_app:latest
+    environment: 
+      CONTAINER_ROLE: queue
+    depends_on:
+      - app
+    volumes: 
+      - .:/var/www
 
   webserver:
     image: nginx:alpine
@@ -41,10 +52,10 @@ services:
       - ./nginx/conf.d/:/etc/nginx/conf.d/
       - ./public:/var/www/html
 
-  #   adminer:
-  #     image: adminer
-  #     restart: always
-  #     ports:
-  #       - 8080:8080
+  adminer:
+    image: adminer
+    restart: always
+    ports:
+      - 3002:8080
   redis:
     image: redis:6.2.4-alpine
