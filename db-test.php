@@ -2,16 +2,13 @@
 $host = "mysql";
 $username = "root";
 $password = "password";
-$connect = false;
+$conn;
 do {
-    echo "Waiting for MySQL\n";
-    sleep(2);
     try {
-        mysqli_connect($host, $username, $password);
-        $connect = true;
+        $conn = mysqli_connect($host, $username, $password);
     } catch (Exception $e) {
-        $connect = false;
+        echo "Waiting for MySQL\n";
     }
-} while (!$connect);
-
+} while (mysqli_connect_errno());
+mysqli_close($conn);
 echo "MySQL is Live\n";
