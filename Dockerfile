@@ -14,7 +14,7 @@ COPY config config
 COPY public html
 COPY resources resources
 COPY routes routes
-COPY database databanse
+COPY database database
 COPY storage storage
 COPY artisan artisan
 COPY composer.phar composer.phar
@@ -29,9 +29,10 @@ RUN chown -R www-data:www-data \
 RUN php composer.phar install
 
 COPY .env .env
+COPY wait-for-it.sh wait-for-it.sh
 
-RUN php artisan config:clear && php artisan migrate
+# RUN php artisan config:clear && php artisan migrate
 
 EXPOSE 9000
 
-CMD ["php-fpm"]
+CMD ["sh start.sh"]
