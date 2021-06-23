@@ -1,3 +1,3 @@
-php composer.php install
+php composer.phar install
 
 docker-compose up
